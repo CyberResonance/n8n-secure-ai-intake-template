@@ -21,6 +21,11 @@ services:
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=http://localhost:5678/
       - GENERIC_TIMEZONE=Europe/Warsaw
+      # --- required by this template (recent n8n blocks both by default) ---
+      # Lets expressions/Code nodes read the values below via $env.NAME.
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      # Lets the HMAC Signature Guard Code node use Node's built-in crypto module.
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto
       # --- secrets consumed by the workflow (from .env, NOT committed) ---
       - WEBHOOK_SIGNING_SECRET=${WEBHOOK_SIGNING_SECRET}
       - LLM_API_BASE_URL=${LLM_API_BASE_URL}

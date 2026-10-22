@@ -55,7 +55,9 @@ See [`dead-letter-and-replay.md`](dead-letter-and-replay.md) for the full detail
 - Every secret is read via `{{ $env.NAME }}` or a `Bearer` header sourced from env. Grep the workflow JSON: there are no literal keys, tokens, or URLs with credentials.
 - `.env` is git-ignored; only `.env.example` (placeholders) ships.
 - The `docker-compose.yml` injects env from `.env` and exposes only n8n's own port.
-- For env access in expressions, self-hosted n8n must have `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` (the default). If your instance sets it to `true`, move the values into n8n **Credentials** / **Variables** instead and reference those.
+- The template needs two n8n settings that recent n8n versions turn off by default (both are set in the bundled `docker-compose.yml`):
+  - `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` so expressions and Code nodes can read `$env.NAME`. If you must keep env access blocked, move the values into n8n **Credentials** / **Variables** and reference those instead.
+  - `NODE_FUNCTION_ALLOW_BUILTIN=crypto` so the HMAC Signature Guard can use Node's `crypto` module. Without it the guard fails with "Module 'crypto' is disallowed" and every request errors out (fail closed, never fail open).
 
 ---
 
