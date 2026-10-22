@@ -1,0 +1,38 @@
+# ---------------------------------------------------------------------------
+# Minimal self-hosted n8n for running this template locally.
+# Least-privilege by design: no inbound ports beyond n8n's own, secrets are
+# injected from .env (never baked into the image), and data is persisted to a
+# named volume so dead-lettered executions survive restarts (enables replay).
+#
+#   cp .env.example .env   # then fill in real values
+#   docker compose up -d
+#   open http://localhost:5678
+# ---------------------------------------------------------------------------
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # --- core ---
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Warsaw
+      # --- secrets consumed by the workflow (from .env, NOT committed) ---
+      - WEBHOOK_SIGNING_SECRET=${WEBHOOK_SIGNING_SECRET}
+      - LLM_API_BASE_URL=${LLM_API_BASE_URL}
+      - LLM_API_KEY=${LLM_API_KEY}
+      - LLM_MODEL=${LLM_MODEL}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL}
+      - N8N_BASE_URL=${N8N_BASE_URL}
+      # Keep failed executions so "Retry from failed node" (replay) works.
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:

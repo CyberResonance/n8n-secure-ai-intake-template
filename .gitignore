@@ -1,0 +1,13 @@
+# Secrets - NEVER commit (Law 2). Only .env.example is tracked.
+.env
+.env.*
+!.env.example
+
+# n8n local data / credentials
+.n8n/
+n8n_data/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
